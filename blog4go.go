@@ -25,7 +25,8 @@ const (
 	// QUOTE quote character
 	QUOTE = '"'
 	// SPACE space character
-	SPACE = ' '
+	SPACE  = ' '
+	SUFFIX = ",`;"
 )
 
 var (
@@ -271,6 +272,7 @@ func (blog *BLog) write(level LevelType, args ...interface{}) int {
 	blog.writer.WriteString(level.prefix())
 	blog.writer.WriteString(blog.tagStr)
 	blog.writer.WriteString(format)
+	blog.writer.WriteString(SUFFIX)
 	blog.writer.WriteByte(EOL)
 
 	size = len(timeCache.Format()) + len(level.prefix()) + len(blog.tagStr) + len(format) + 1
@@ -319,14 +321,14 @@ func (blog *BLog) writef(level LevelType, format string, args ...interface{}) in
 				n++
 				last = i + 1
 				tag = false
-			//转义符
+				//转义符
 			case ESCAPE:
 				if escape {
 					blog.writer.WriteByte(ESCAPE)
 					size++
 				}
 				escape = !escape
-			//默认
+				//默认
 			default:
 
 			}
@@ -344,6 +346,7 @@ func (blog *BLog) writef(level LevelType, format string, args ...interface{}) in
 	}
 	blog.writer.WriteString(format[last:])
 	blog.writer.WriteByte(QUOTE)
+	blog.writer.WriteString(SUFFIX)
 	blog.writer.WriteByte(SPACE)
 	blog.writer.WriteByte(EOL)
 
